@@ -1,0 +1,23 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: This is a lambda service that returns optimiser commercial times
+Resources:
+  GetOptimiserFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: Optimiser::Optimiser.LambdaEntryPoint::FunctionHandlerAsync
+      Runtime: dotnetcore3.1
+      CodeUri: s3://optimisers3bucket/f3d84a84e998bb78fedce8c58c3c7819
+      Policies:
+      - AmazonDynamoDBFullAccess
+      Timeout: 60
+      MemorySize: 3008
+      Environment:
+        Variables:
+          S3_BUCKET: optimisercfsambucket
+      Events:
+        ProxyResource:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
