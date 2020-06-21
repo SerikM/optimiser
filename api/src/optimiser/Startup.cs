@@ -28,18 +28,13 @@ namespace Optimiser
             services.AddCors(options =>
             {
                 options.AddPolicy(name: CorsPolicyName,
-                                  builder =>
-                                  {
-                                      builder.WithOrigins("*")
-                                      .AllowAnyHeader()
-                                      .AllowAnyMethod(); ;
-                                  });
+                                  builder => { builder.WithOrigins("*").AllowAnyHeader().AllowAnyMethod();});
             });
             services.AddOptions();
             services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
             services.Configure<AwsSettingsModel>(Configuration.GetSection("AWS"));
             AWSSDKHandler.RegisterXRayForAllServices();
-            services.AddTransient<ICalculationService, CalculationService>();
+            services.AddTransient<IProcessingService, ProcessingService>();
             services.AddTransient<IDBDataService<IData>, DBDataService<IData>>();
             services.AddAWSService<IAmazonDynamoDB>();
             services.AddControllers();

@@ -12,9 +12,9 @@ namespace Optimiser.Controllers
     public class DefaultController : ControllerBase
     {
         private const string ErrorMessage = "failed to process request";
-        private readonly ICalculationService _calculationService;
+        private readonly IProcessingService _calculationService;
 
-        public DefaultController(ICalculationService calculationService)
+        public DefaultController(IProcessingService calculationService)
         {
             _calculationService = calculationService;
         }

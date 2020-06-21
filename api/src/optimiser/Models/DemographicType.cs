@@ -2,9 +2,8 @@
 {
     public enum DemographicType
     {
-        One = 1,
-        Two = 2,
-        Three = 3,
-        Four = 4
+        Men = 1,
+        Women = 2,
+        Total = 3
     }
 }

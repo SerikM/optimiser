@@ -31,9 +31,8 @@ class Home extends React.Component {
 
     this.setLoading(true);
 
-
         const client = new httpClient();
-        return client.get(`${config.aws.api.url}${config.aws.api.path}`, { 'x-api-key': 'nHtKKfZoy98mdnCM0fBYsa55UzyrXCPS4vSmELjb' })
+        return client.get(`${config.aws.api.url}${config.aws.api.path}`, { 'x-api-key': config.aws.api.key })
             .then(response => {
                 const data = JSON.parse(response.data.body);
 
@@ -50,11 +49,10 @@ class Home extends React.Component {
     render() {
         return (
             <React.Fragment>
-                <div>
-                    <h1>Hello, world!</h1>
-                    <input type="button" onClick={this.ensureDataFetched} value="get data"></input>
-                </div>
-                <Spinner isLoading={this.state.isLoading} />
+                
+                {this.state.isLoading 
+                ?  <Spinner isLoading={this.state.isLoading} />
+                :  <input type="button" onClick={this.ensureDataFetched} value="get data"></input>}
             </React.Fragment>
         )
     };

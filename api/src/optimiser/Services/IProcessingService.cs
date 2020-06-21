@@ -2,8 +2,8 @@
 
 namespace Optimiser.Services
 {
-    public interface ICalculationService
+    public interface IProcessingService
     {
-        public object GetData();
+        public Task<object> GetData();
     }
 }
