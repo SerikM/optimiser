@@ -1,12 +1,7 @@
 ﻿using Optimiser.Models;
-using System;
 using System.Linq;
-using System.Globalization;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Microsoft.Extensions.Logging;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.InteropServices;
 
 namespace Optimiser.Services
 {
@@ -16,36 +11,33 @@ namespace Optimiser.Services
         private const int MaxNumberOfCommercialsPerBrake = 3;
         private const int MaxNumberOfCommercialsPerBrakeWithSameType = 2;
 
-
         public ProcessingService(IDBDataService<IData> dataService)
         {
             _dataService = dataService;
         }
 
-        public async Task<object> GetData()
+        public List<Break> GetDefaultData()
         {
-            //var breaks = await _dataService.GetItems<Break>();
-            //var commercials = await _dataService.GetItems<Commercial>();
+           return _dataService.GetBreaksWithDefaultRatings();
+        }
 
-            var breaks = _dataService.GetBreaks();
+        public List<Break> GetData(List<Break> breaks)
+        {
             var commercials = _dataService.GetCommercials();
+
             int start = 0;
             foreach (var comm in commercials) 
             {
-                var newComm = (Commercial)comm;
-
-                ProcessRecursively(breaks, newComm, start);
-
-
+               ProcessRecursively(breaks, comm, start);
             }
-
-            return null;
+            return breaks;
         }
-
 
         public void ProcessRecursively(List<Break> breaks, Commercial currComm,int start) 
         {
             Break bestBr = null;
+            if (start == breaks.Count) return;
+
             var breakIntern = breaks.Skip(start).ToList();
             foreach (var br in breakIntern)
             {
@@ -100,7 +92,8 @@ namespace Optimiser.Services
 
         private bool IsAllowedToAdd(Break bestBr, Commercial currComm)
         {
-            return true;
+            var allowed = bestBr.DisallowedCommTypes == null || !bestBr.DisallowedCommTypes.Any(d => d == currComm.CommercialType);
+            return allowed;
         }
 
         private bool ShouldBeReplaced(Commercial currComm, Break optmBr)

@@ -7,7 +7,7 @@ Resources:
     Properties:
       Handler: Optimiser::Optimiser.LambdaEntryPoint::FunctionHandlerAsync
       Runtime: dotnetcore3.1
-      CodeUri: s3://optimisers3bucket/f3d84a84e998bb78fedce8c58c3c7819
+      CodeUri: s3://optimiser-api/ea17967b31ae2aa6fbca4a026558b003
       Policies:
       - AmazonDynamoDBFullAccess
       Timeout: 60

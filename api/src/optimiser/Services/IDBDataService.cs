@@ -8,7 +8,7 @@ namespace Optimiser.Services
     public interface IDBDataService<T>
     {
         Task<List<T>> GetItems<T>();
-        List<Break> GetBreaks();
+        List<Break> GetBreaksWithDefaultRatings();
         List<Commercial> GetCommercials();
     }
 }

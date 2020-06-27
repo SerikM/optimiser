@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using System;
 using Amazon.Lambda.APIGatewayEvents;
 using System.Collections.Generic;
+using Optimiser.Models;
+using System.Linq;
 
 namespace Optimiser.Controllers
 {
@@ -20,18 +22,24 @@ namespace Optimiser.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetData()
+        public  IActionResult GetData()
         {
-            int count = -1;
-            var from = "var"; var to = "var";
-            if (!string.IsNullOrEmpty(from) && !string.IsNullOrEmpty(to))
-            {
-                count = Convert.ToInt16(_calculationService.GetData());
-            };
+           var breaks =  _calculationService.GetDefaultData();
 
-            if (count < 0) return BadRequest(ErrorMessage);
+           if (breaks.Count < 0) return BadRequest(ErrorMessage);
 
-            return Ok(JsonConvert.SerializeObject(count));
+           return Ok(JsonConvert.SerializeObject(breaks));
+        }
+
+
+        [HttpPost]
+        public  IActionResult GetData([FromBody]List<Break> breaks)
+        {
+            if(breaks == null || !breaks.Any()) return BadRequest(ErrorMessage);
+            breaks =  _calculationService.GetData(breaks);
+            if (breaks == null || !breaks.Any()) return BadRequest(ErrorMessage);
+
+            return Ok(JsonConvert.SerializeObject(new { breaksWithCommercials = breaks, total = breaks.Sum(d => d.Commercials.Sum(p => p.CurrentRating.Score))}));
         }
     }
 }

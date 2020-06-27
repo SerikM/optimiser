@@ -1,4 +1,6 @@
-﻿namespace Optimiser.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Optimiser.Models
 {
     public enum CommercialType
     {
