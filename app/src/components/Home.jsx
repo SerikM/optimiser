@@ -67,17 +67,17 @@ class Home extends React.Component {
 
 
     updateRating(target, brId, demoName, elId) {
-        this.setState({current: elId});
+        this.setState({ current: elId });
         let value = target.value;
         const number = parseInt(value, 10);
         if (value.length > 6 || isNaN(number) || ! /^\d+$/.test(value)) {
             target.style.borderColor = "red";
             target.style.borderStyle = "solid";
-            this.setState({errors:true});
+            this.setState({ errors: true });
             return;
         }
         else {
-            this.setState({errors:false});
+            this.setState({ errors: false });
             target.style.borderColor = "";
             target.style.borderStyle = "";
         }
@@ -94,9 +94,13 @@ class Home extends React.Component {
     render() {
         return (
             <React.Fragment>
+
                 <div className="total">
-                    {this.state.total > 0 && <h2>{this.state.total}</h2>}
+                {this.state.isLoading ? <Spinner isLoading={this.state.isLoading} /> :
+                    this.state.total > 0 && <h2>{this.state.total}</h2>
+                }
                 </div>
+
                 <hr></hr>
 
 
@@ -141,64 +145,72 @@ class Home extends React.Component {
                     )}
                 </div>
                 <div className="main">
-                    {this.state.isLoading ? <Spinner isLoading={this.state.isLoading} /> :
-                        <React.Fragment>
-                            <div className="row row-header">
+
+
+                    <React.Fragment>
+                        <div className="row row-header">
+
+                            <div className="col-2">
+                                <div className="row">
+                                    <div className="col-12">Break</div>
+                                </div>
+                            </div>
+
+                            <div className="col-10">
+                                <div className="row">
+                                    <div className="col-4">Commercial</div>
+                                    <div className="col-4">Demographic</div>
+                                    <div className="col-4">Type</div>
+                                </div>
+                            </div>
+
+                        </div>
+                        {this.state.breaksWithCommercials && this.state.breaksWithCommercials.map((br, i) =>
+
+                            <div key={i} className="row align-items-center">
 
                                 <div className="col-2">
                                     <div className="row">
-                                        <div className="col-12">Break</div>
+                                        <div key={i + 'a'} className="col-12" >{br.Id}</div>
                                     </div>
                                 </div>
 
                                 <div className="col-10">
                                     <div className="row">
-                                        <div className="col-4">Commercial</div>
-                                        <div className="col-4">Demographic</div>
-                                        <div className="col-4">Type</div>
+
+                                        {br.Commercials && br.Commercials.map((comm, k) =>
+                                            <React.Fragment key={k + 'e'}>
+                                                <div key={k + 'b'} className="col-4">
+                                                    {this.state.isLoading ? <Spinner isLoading={this.state.isLoading} /> :
+                                                        comm.Id
+                                                    }
+                                                </div>
+
+                                                <div key={k + 'c'} className="col-4">
+                                                    {this.state.isLoading ? <Spinner isLoading={this.state.isLoading} /> :
+                                                        comm.TargetDemoName
+                                                    }
+                                                </div>
+
+                                                <div key={k + 'd'} className="col-4">
+                                                    {this.state.isLoading ? <Spinner isLoading={this.state.isLoading} /> :
+                                                        comm.CommercialTypeName
+                                                    }
+                                                </div>
+                                            </React.Fragment>
+                                        )}
                                     </div>
                                 </div>
 
                             </div>
-                            {this.state.breaksWithCommercials && this.state.breaksWithCommercials.map((br, i) =>
-
-                                <div key={i} className="row align-items-center">
-
-                                    <div className="col-2">
-                                        <div className="row">
-                                            <div key={i + 'a'} className="col-12" >{br.Id}</div>
-                                        </div>
-                                    </div>
-
-                                    <div className="col-10">
-                                        <div className="row">
-
-                                            {br.Commercials && br.Commercials.map((comm, k) =>
-                                                <React.Fragment key={k + 'e'}>
-                                                    <div key={k + 'b'} className="col-4">
-                                                        {comm.Id}
-                                                    </div>
-
-                                                    <div key={k + 'c'} className="col-4">
-                                                        {comm.TargetDemoName}
-                                                    </div>
-
-                                                    <div key={k + 'd'} className="col-4">
-                                                        {comm.CommercialTypeName}
-                                                    </div>
-                                                </React.Fragment>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                </div>
 
 
-                            )}
-                        </React.Fragment>
-                    }
+                        )}
+                    </React.Fragment>
+
 
                 </div>
+
             </React.Fragment>
         )
     };
