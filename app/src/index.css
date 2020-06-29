@@ -2,9 +2,7 @@ a {
   color: #0366d6;
 }
 
-code {
-  color: #E01A76;
-}
+
 
 .btn-primary {
   color: #fff;
@@ -18,16 +16,92 @@ a.navbar-brand {
   word-break: break-all;
   background-color: #808080;
 }
+
 header {
- background-color: #808080;
+  background-color: #808080;
 }
 
-html { font-size: 14px; }
+html {
+  font-size: 14px;
+}
 
 @media (min-width: 768px) {
-  html { font-size: 16px; }
+  html {
+    font-size: 16px;
+  }
 }
 
-.box-shadow { box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05); }
+.box-shadow {
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
 
 
+
+
+
+input[type="text"], input[type="number"] {
+  text-align: center;
+  max-width: 100px;
+  border-radius: 4px;
+  border-color: #808080;
+  border-style: none;
+  cursor: pointer;
+}
+
+
+.row-inner {
+  background: aliceblue;
+  padding-top: 40px;
+}
+
+.main {
+  color: #808080;
+  padding: 0 15px;
+  margin-top: 20px;
+  border-radius: 4px;
+}
+
+.main .row {
+  padding-top: 10px;
+  text-align: center;
+}
+
+.main>:nth-child(2n +1) {
+  background-color: #808080;
+  color: white;
+}
+
+.main>:nth-child(2n) input[type="number"] {
+  background-color: #808080;
+  color: white;
+}
+
+.main .row-header {
+  font-size: 20px;
+  padding: 30px 0 15px 0;
+  background-color: #808080;
+  color: white;
+  text-align: center;
+}
+
+/* vertical spacing between columns */
+
+[class*="col-"] {
+  margin-bottom: 10px;
+}
+
+.total {
+  text-align: right;
+  padding: 0;
+  color: #808080;
+}
+
+@media(max-width:440px) {
+  .main {
+    padding: 0px;
+  }
+
+  .row-header {
+    font-size: 15px;
+  }
+}

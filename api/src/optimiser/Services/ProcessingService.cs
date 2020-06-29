@@ -30,7 +30,7 @@ namespace Optimiser.Services
             {
                ProcessRecursively(breaks, comm, start);
             }
-            return breaks;
+            return breaks.OrderBy(p => p.Id).ToList();
         }
 
         public void ProcessRecursively(List<Break> breaks, Commercial currComm,int start) 

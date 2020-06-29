@@ -12,7 +12,8 @@ class Home extends React.Component {
             isLoading: false,
             breaks: null,
             breaksWithCommercials: null,
-            total : 0
+            total: 0,
+            errors: false
         }
 
         this.ensureDataFetched = this.ensureDataFetched.bind(this);
@@ -28,7 +29,10 @@ class Home extends React.Component {
 
 
     componentDidMount() {
-        this.ensureDataFetched();
+        this.ensureDataFetched()
+            .then(() => {
+                this.refetchData();
+            });
     }
 
     ensureDataFetched() {
@@ -61,80 +65,140 @@ class Home extends React.Component {
             .catch((err) => { this.setLoading(false); });
     }
 
-    updateRating(value, brId, demoName) {
+
+    updateRating(target, brId, demoName, elId) {
+        this.setState({current: elId});
+        let value = target.value;
+        const number = parseInt(value, 10);
+        if (value.length > 6 || isNaN(number) || ! /^\d+$/.test(value)) {
+            target.style.borderColor = "red";
+            target.style.borderStyle = "solid";
+            this.setState({errors:true});
+            return;
+        }
+        else {
+            this.setState({errors:false});
+            target.style.borderColor = "";
+            target.style.borderStyle = "";
+        }
+
         const breaks = this.state.breaks;
-        breaks.map(p => p.Id === brId ? p.Ratings.map(d => d.DemoName === demoName ? d.Score = value : d) : p);
+        breaks.map(p => p.Id === brId ? p.Ratings.map(d => d.DemoName === demoName ? d.Score = number : d) : p);
         this.setState((state) => {
             return { state: state.breaks = breaks };
-        })
+        });
+        this.refetchData();
     }
 
 
     render() {
         return (
             <React.Fragment>
-                <div className="row">
-                    <div className="col-md-4">Break Id</div><div className="col-md-6">Commercial Demographic</div><div className="col-md-2">Rating</div>
+                <div className="total">
+                    {this.state.total > 0 && <h2>{this.state.total}</h2>}
                 </div>
-                {this.state.breaks && this.state.breaks.map((br, i) =>
+                <hr></hr>
 
-                    <div key={i} className="row">
-                        <div key={i + 1} className="col-md-4" >{br.Id}</div>
 
-                        <div key={i + 2} className="col-md-6">
-                            {br.Ratings.map((rating, j) =>
-                                <div key={j} className="col-md-12">{rating.DemoName}</div>
-                            )}
-                        </div>
+                <div className="main">
 
-                        <div key={i + 3} className="col-md-2">
-                            {br.Ratings.map((rating, k) =>
-                                <input key={k + 1} type="text" onChange={(e) => this.updateRating(parseInt(e.target.value, 10), br.Id, rating.DemoName)} className="col-md-12" defaultValue={rating.Score} placeholder={rating.Score} />
-                            )}
-                        </div>
-
+                    <div className="row row-header">
+                        <div className="col-2">Break</div>
+                        <div className="col-5">Demographic</div>
+                        <div className="col-5">Rating</div>
                     </div>
-                )}
 
-                <div className="row">
-                    <div className="col-md-2">Break Id</div><div className="col-md-2">Commercial Id</div><div className="col-md-4">Commercial Demographic</div><div className="col-md-4">Commercial Type</div>
+                    {this.state.breaks && this.state.breaks.map((br, i) =>
+
+                        <div key={i} className="row align-items-center">
+
+                            <div className="col-2">
+                                <div className="row">
+                                    <div key={i + 1} className="col-12" >{br.Id}</div>
+                                </div>
+                            </div>
+
+                            <div className="col-10">
+
+                                <div className="row">
+                                    {br.Ratings && br.Ratings.map((rating, j) =>
+                                        <React.Fragment key={j + 5}>
+                                            <div key={j + 1} className="col-6">
+                                                <span key={j + 2}></span>  {rating.DemoName}
+                                            </div>
+
+                                            <div key={j + 3} className="col-6">
+                                                <input key={`${i}${j}`} type="number" disabled={this.state.errors && this.state.current !== `${i}${j}`} inputMode="numeric" onChange={(e) => this.updateRating(e.target, br.Id, rating.DemoName, `${i}${j}`)} defaultValue={rating.Score} />
+                                            </div>
+                                        </React.Fragment>
+                                    )}
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                    )}
                 </div>
+                <div className="main">
+                    {this.state.isLoading ? <Spinner isLoading={this.state.isLoading} /> :
+                        <React.Fragment>
+                            <div className="row row-header">
 
-                {this.state.breaksWithCommercials && this.state.breaksWithCommercials.map((br, i) =>
-                    <div key={i} className="row">
-                        <div key={i + 'a'} className="col-md-2" >{br.Id}</div>
+                                <div className="col-2">
+                                    <div className="row">
+                                        <div className="col-12">Break</div>
+                                    </div>
+                                </div>
+
+                                <div className="col-10">
+                                    <div className="row">
+                                        <div className="col-4">Commercial</div>
+                                        <div className="col-4">Demographic</div>
+                                        <div className="col-4">Type</div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            {this.state.breaksWithCommercials && this.state.breaksWithCommercials.map((br, i) =>
+
+                                <div key={i} className="row align-items-center">
+
+                                    <div className="col-2">
+                                        <div className="row">
+                                            <div key={i + 'a'} className="col-12" >{br.Id}</div>
+                                        </div>
+                                    </div>
+
+                                    <div className="col-10">
+                                        <div className="row">
+
+                                            {br.Commercials && br.Commercials.map((comm, k) =>
+                                                <React.Fragment key={k + 'e'}>
+                                                    <div key={k + 'b'} className="col-4">
+                                                        {comm.Id}
+                                                    </div>
+
+                                                    <div key={k + 'c'} className="col-4">
+                                                        {comm.TargetDemoName}
+                                                    </div>
+
+                                                    <div key={k + 'd'} className="col-4">
+                                                        {comm.CommercialTypeName}
+                                                    </div>
+                                                </React.Fragment>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                </div>
 
 
-                        <div key={i + 'b'} className="col-md-2">
-                            {br.Commercials && br.Commercials.map((comm, j) =>
-                                <div key={j} className="col-md-12">{comm.Id}</div>
                             )}
-                        </div>
+                        </React.Fragment>
+                    }
 
-
-                        <div key={i + 'c'} className="col-md-4">
-                            {br.Commercials && br.Commercials.map((comm, k) =>
-                                <div key={k} type="text" className="col-md-12">{comm.TargetDemoName}</div>
-                            )}
-                        </div>
-
-
-                        <div key={i + 'd'} className="col-md-4">
-                            {br.Commercials && br.Commercials.map((comm, l) =>
-                                <div key={l} type="text" className="col-md-12">{comm.CommercialTypeName}</div>
-                            )}
-                        </div>
-
-
-                    </div>
-                )}
-
-                            {this.state.total > 0 && <h2>{this.state.total}</h2>}
-
-                {this.state.isLoading
-                    ? <Spinner isLoading={this.state.isLoading} />
-                    : <input type="button" onClick={this.refetchData} value="optimize"></input>}
-
+                </div>
             </React.Fragment>
         )
     };
