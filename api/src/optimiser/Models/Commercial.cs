@@ -3,7 +3,7 @@ using System;
 
 namespace Optimiser.Models
 {
-    public class Commercial : IData 
+    public class Commercial : IData
     {
         public int Id { get; set; }
         public Rating CurrentRating { get; set; }
