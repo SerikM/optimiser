@@ -1,7 +1,7 @@
 {
     "aws": {
       "api": {
-        "url": "https://x8qipat80g.execute-api.ap-southeast-2.amazonaws.com/Prod",
+        "url": "http://localhost:5000",
         "path": "/v1/default",
         "key": "nHtKKfZoy98mdnCM0fBYsa55UzyrXCPS4vSmELjb"
       }

@@ -26,8 +26,6 @@ class Home extends React.Component {
         this.setState({ isLoading });
     }
 
-
-
     componentDidMount() {
         this.ensureDataFetched()
             .then(() => {
@@ -65,21 +63,18 @@ class Home extends React.Component {
             .catch((err) => { this.setLoading(false); });
     }
 
-
     updateRating(target, brId, demoName, elId) {
         this.setState({ current: elId });
         let value = target.value;
         const number = parseInt(value, 10);
         if (value.length > 6 || isNaN(number) || ! /^\d+$/.test(value)) {
             target.style.borderColor = "red";
-            target.style.borderStyle = "solid";
             this.setState({ errors: true });
             return;
         }
         else {
             this.setState({ errors: false });
             target.style.borderColor = "";
-            target.style.borderStyle = "";
         }
 
         const breaks = this.state.breaks;
@@ -96,57 +91,51 @@ class Home extends React.Component {
             <React.Fragment>
 
                 <div className="total">
-                {this.state.isLoading ? <Spinner isLoading={this.state.isLoading} /> :
-                    this.state.total > 0 && <h2>{this.state.total}</h2>
-                }
+                    {this.state.isLoading ? <Spinner isLoading={this.state.isLoading} /> :
+                        this.state.total > 0 && <h2>{this.state.total}</h2>
+                    }
                 </div>
-
                 <hr></hr>
-
-
                 <div className="main">
-
                     <div className="row row-header">
-                        <div className="col-2">Break</div>
-                        <div className="col-5">Demographic</div>
-                        <div className="col-5">Rating</div>
+                        <div className="col-2">
+                            <div className="row">
+                                <div className="col-12">Break</div>
+                            </div>
+                        </div>
+                        <div className="col-10">
+                            <div className="row">
+                                <div className="col-7 col-md-8">Demographic</div>
+                                <div className="col-5 col-md-4">Rating</div>
+                            </div>
+                        </div>
                     </div>
-
                     {this.state.breaks && this.state.breaks.map((br, i) =>
-
                         <div key={i} className="row align-items-center">
-
                             <div className="col-2">
                                 <div className="row">
                                     <div key={i + 1} className="col-12" >{br.Id}</div>
                                 </div>
                             </div>
-
                             <div className="col-10">
-
                                 <div className="row">
                                     {br.Ratings && br.Ratings.map((rating, j) =>
                                         <React.Fragment key={j + 5}>
-                                            <div key={j + 1} className="col-6">
+                                            <div key={j + 1} className="col-7 col-md-8">
                                                 <span key={j + 2}></span>  {rating.DemoName}
                                             </div>
 
-                                            <div key={j + 3} className="col-6">
+                                            <div key={j + 3} className="col-5 col-md-4">
                                                 <input key={`${i}${j}`} type="number" disabled={this.state.errors && this.state.current !== `${i}${j}`} inputMode="numeric" onChange={(e) => this.updateRating(e.target, br.Id, rating.DemoName, `${i}${j}`)} defaultValue={rating.Score} />
                                             </div>
                                         </React.Fragment>
                                     )}
                                 </div>
-
                             </div>
                         </div>
-
-
                     )}
                 </div>
-                <div className="main">
-
-
+                <div className="main lower">
                     <React.Fragment>
                         <div className="row row-header">
 
@@ -166,18 +155,14 @@ class Home extends React.Component {
 
                         </div>
                         {this.state.breaksWithCommercials && this.state.breaksWithCommercials.map((br, i) =>
-
                             <div key={i} className="row align-items-center">
-
                                 <div className="col-2">
                                     <div className="row">
                                         <div key={i + 'a'} className="col-12" >{br.Id}</div>
                                     </div>
                                 </div>
-
                                 <div className="col-10">
                                     <div className="row">
-
                                         {br.Commercials && br.Commercials.map((comm, k) =>
                                             <React.Fragment key={k + 'e'}>
                                                 <div key={k + 'b'} className="col-4">
@@ -185,13 +170,11 @@ class Home extends React.Component {
                                                         comm.Id
                                                     }
                                                 </div>
-
                                                 <div key={k + 'c'} className="col-4">
                                                     {this.state.isLoading ? <Spinner isLoading={this.state.isLoading} /> :
                                                         comm.TargetDemoName
                                                     }
                                                 </div>
-
                                                 <div key={k + 'd'} className="col-4">
                                                     {this.state.isLoading ? <Spinner isLoading={this.state.isLoading} /> :
                                                         comm.CommercialTypeName
@@ -201,19 +184,12 @@ class Home extends React.Component {
                                         )}
                                     </div>
                                 </div>
-
                             </div>
-
-
                         )}
                     </React.Fragment>
-
-
                 </div>
-
             </React.Fragment>
         )
     };
 };
-
 export default Home;
