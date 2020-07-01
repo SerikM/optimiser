@@ -7,7 +7,7 @@ Resources:
     Properties:
       Handler: Optimiser::Optimiser.LambdaEntryPoint::FunctionHandlerAsync
       Runtime: dotnetcore3.1
-      CodeUri: s3://optimiser-api/6b65b4503d74389b9746150255ec22fd
+      CodeUri: s3://optimiser-api/8fa3404532c112fc41431557d828db67
       Policies:
       - AmazonDynamoDBFullAccess
       Timeout: 60
@@ -21,3 +21,29 @@ Resources:
           Properties:
             Path: /{proxy+}
             Method: ANY
+  Break:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: Id
+        AttributeType: N
+      KeySchema:
+      - AttributeName: Id
+        KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: '5'
+        WriteCapacityUnits: '5'
+      TableName: Break
+  Commercial:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: Id
+        AttributeType: N
+      KeySchema:
+      - AttributeName: Id
+        KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: '4'
+        WriteCapacityUnits: '4'
+      TableName: Commercial

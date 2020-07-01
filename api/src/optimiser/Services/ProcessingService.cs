@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
 using Optimiser.Models;
+using System.Threading.Tasks;
 
 namespace Optimiser.Services
 {
@@ -15,14 +16,14 @@ namespace Optimiser.Services
             _dataService = dataService;
         }
 
-        public List<Break> GetDefaultData()
+        public async Task<List<Break>> GetDefaultData()
         {
-            return _dataService.GetBreaksWithDefaultRatings();
+            return await _dataService.GetItems<Break>();
         }
 
-        public List<Break> GetData(List<Break> breaks)
+        public async Task<List<Break>> GetOptimalRatings(List<Break> breaks)
         {
-            var commercials = _dataService.GetCommercials();
+            var commercials = await _dataService.GetItems<Commercial>();
 
             int start = 0;
             foreach (var comm in commercials)
@@ -197,6 +198,11 @@ namespace Optimiser.Services
         private int GetScore(Break br, Commercial comm)
         {
             return br?.Ratings?.FirstOrDefault(p => p.DemoType == comm.TargetDemo)?.Score ?? 0;
+        }
+
+        public bool SeedData() 
+        {
+          return  _dataService.SeedItems();
         }
     }
 }

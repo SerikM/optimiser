@@ -90,8 +90,8 @@ class Home extends React.Component {
         return (
             <React.Fragment>
                 <div className="row">
-                    <div className="col-2 refresh-cont">
-                        <a className="refresh d-inline d-md-none d-lg-none" href="#" onClick={() => window.location.reload(false)}> Refresh</a>
+                    <div onClick={() => window.location.reload(false)} className="col-2 refresh-cont">
+                        <a className="refresh d-inline d-md-none d-lg-none" href="#" > Refresh</a>
                     </div>
                     <div className="total col-10">
                         {this.state.isLoading ? <Spinner isLoading={this.state.isLoading} /> :

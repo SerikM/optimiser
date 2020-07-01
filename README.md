@@ -65,12 +65,12 @@ aws s3 mb s3://[my-bucket-name] --region ap-southeast-2
 
 > To prepare the package for the deployment to CloudFormation and to transform the template.yml run:
 ```shell
-aws cloudformation package --template-file ./template.yml --output-template-file sam-template.yml --s3-bucket [my-bucket-name]
+aws cloudformation package --template-file ./template.yml --output-template-file sam-template.yml --s3-bucket optimiser-api
 ```
 
 > To deploy the packaged source code to aws lambda using CF run:
 ```shell
-aws cloudformation deploy --template-file ./sam-template.yml --stack-name [my-bucket-name] --capabilities CAPABILITY_IAM
+aws cloudformation deploy --template-file ./sam-template.yml --stack-name optimiser-api --capabilities CAPABILITY_IAM
 ```
   
 # Testing instructions.
