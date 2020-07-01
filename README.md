@@ -16,7 +16,7 @@ The application supports all types of mobile devices and works well on desktops.
 
 # Architecture
 
-- This application follows the modern and popular design and principles of building and hosting cloud based serverless public facing applications. 
+- This application follows the modern serverless design and the best practices of building and hosting cloud based serverless public facing applications. 
 - The application consists of two main parts - the `Reactjs UI app` and the `.NET Core Lambda api`.
 - This dessign achieves great economy as it makes unnecessary running a full-scale web server and this is also in line with all the principles of the microservices architecture.
 
@@ -27,8 +27,9 @@ The application supports all types of mobile devices and works well on desktops.
 ## Lambda api
 - The api is based on the .NET Core 3.1 AWS Lambda template. The logic is implemented using C#.
 - The api is run as a serverless application.
-- The api uses DynamoDb as it's main storage provider
-- All the default applicartion data like ratrings, commercial ids etc are retrieved from DynamoDb at startup
+- The api uses the serverless database technology `DynamoDb` as it's main storage provider
+- All the default applicartion data like ratrings, commercial ids etc are retrieved from DynamoDb at startup.
+- The api uses two DynamoDb data tables for its operation. The tables' get provisioned during the initial deployment of the api (procedure is decribed below). 
 
 
 ## UI app build instructions
@@ -41,6 +42,7 @@ npm run start
 ```shell
 npm run start
 ```
+> now you can copy the files from the build folder to the server of your choice
 
 
 ## API build instructions
@@ -72,6 +74,13 @@ aws cloudformation package --template-file ./template.yml --output-template-file
 ```shell
 aws cloudformation deploy --template-file ./sam-template.yml --stack-name [my-bucket-name] --capabilities CAPABILITY_IAM
 ```
+
+## DynamoDb data seed instructions
+> initially the data tables are provisioned empty. In order to populate them with data the PUT api can be called, provided the api where lambda has been deployed is known.
+```shell
+PUT https://[lambda-hostname]/Prod/v1/default
+```
+  
   
 # Testing instructions.
  Currently the app is deployed here <a href="http://optimiser-app.s3-website-ap-southeast-2.amazonaws.com" target="_blank">here</a>.
