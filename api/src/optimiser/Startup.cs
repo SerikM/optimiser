@@ -1,14 +1,14 @@
-﻿using Optimiser.Services;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Optimiser.Models;
 using Amazon.DynamoDBv2;
 using Amazon.XRay.Recorder.Core;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using Microsoft.Net.Http.Headers;
+using Optimiser.Models;
+using Optimiser.Services;
 
 namespace Optimiser
 {
@@ -35,7 +35,7 @@ namespace Optimiser
             services.Configure<AwsSettingsModel>(Configuration.GetSection("AWS"));
             AWSSDKHandler.RegisterXRayForAllServices();
             services.AddTransient<IProcessingService, ProcessingService>();
-            services.AddTransient<IDBDataService<IData>, DBDataService<IData>>();
+            services.AddTransient<IDbDataService<IData>, DbDataService<IData>>();
             services.AddAWSService<IAmazonDynamoDB>();
             services.AddControllers();
     }

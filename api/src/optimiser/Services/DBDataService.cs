@@ -4,17 +4,17 @@ using System.Threading.Tasks;
 using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
-using Optimiser.Models;
 using Microsoft.Extensions.Options;
 using Amazon.XRay.Recorder.Core;
+using Optimiser.Models;
 
 namespace Optimiser.Services
 {
-    public class DBDataService<T> : IDBDataService<IData>
+    public class DbDataService<T> : IDbDataService<IData>
     {
         private readonly IDynamoDBContext _ddbContext;
 
-        public DBDataService(IAmazonDynamoDB dynamoDbClient, IOptions<AwsSettingsModel> appSettings)
+        public DbDataService(IAmazonDynamoDB dynamoDbClient, IOptions<AwsSettingsModel> appSettings)
         {
             AWSConfigsDynamoDB.Context.TypeMappings[typeof(T)] = new Amazon.Util.TypeMapping(typeof(T), typeof(T).Name);
             var conf = new DynamoDBContextConfig { Conversion = DynamoDBEntryConversion.V2 };
@@ -73,7 +73,7 @@ namespace Optimiser.Services
                                                       new Rating() { Score = 100, DemoType = DemographicType.Men },
                                                       new Rating() { Score = 250, DemoType = DemographicType.Total }}},
 
-                    new Break() { Id = 2, DisallowedCommTypes = new List<CommercialType> { CommercialType.Finance }, 
+                    new Break() { Id = 2, DisallowedCommTypes = new List<CommercialType> { CommercialType.Finance },
                                                       Ratings = new List<Rating>{
                                                       new Rating() { Score = 50, DemoType = DemographicType.Women },
                                                       new Rating() { Score = 120, DemoType = DemographicType.Men },
@@ -87,7 +87,7 @@ namespace Optimiser.Services
         }
 
 
-        public List<Commercial> GetCommercials()
+        public IEnumerable<Commercial> GetCommercials()
         {
             return new List<Commercial> {
                                           new Commercial() { Id = 1, CommercialType = CommercialType.Automotive, TargetDemo = DemographicType.Women },

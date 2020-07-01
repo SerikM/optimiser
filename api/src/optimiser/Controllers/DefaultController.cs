@@ -1,12 +1,9 @@
-﻿using Optimiser.Services;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System.Threading.Tasks;
-using System;
-using Amazon.Lambda.APIGatewayEvents;
 using System.Collections.Generic;
-using Optimiser.Models;
 using System.Linq;
+using Optimiser.Models;
+using Optimiser.Services;
 
 namespace Optimiser.Controllers
 {
@@ -25,7 +22,6 @@ namespace Optimiser.Controllers
         public  IActionResult GetData()
         {
            var breaks =  _calculationService.GetDefaultData();
-
            if (breaks.Count < 0) return BadRequest(ErrorMessage);
 
            return Ok(JsonConvert.SerializeObject(breaks));

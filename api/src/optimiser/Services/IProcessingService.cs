@@ -1,6 +1,5 @@
-﻿using Optimiser.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Optimiser.Models;
 
 namespace Optimiser.Services
 {
@@ -8,6 +7,5 @@ namespace Optimiser.Services
     {
         public List<Break> GetDefaultData();
         public List<Break> GetData(List<Break> breaks = null);
-
     }
 }

@@ -1,16 +1,16 @@
-﻿using Optimiser.Models;
-using System.Linq;
+﻿using System.Linq;
 using System.Collections.Generic;
+using Optimiser.Models;
 
 namespace Optimiser.Services
 {
     public class ProcessingService : IProcessingService
     {
-        private readonly IDBDataService<IData> _dataService;
+        private readonly IDbDataService<IData> _dataService;
         private const int MaxNumberOfCommercialsPerBrake = 3;
         private const int MaxNumberOfCommercialsPerBrakeWithSameType = 2;
 
-        public ProcessingService(IDBDataService<IData> dataService)
+        public ProcessingService(IDbDataService<IData> dataService)
         {
             _dataService = dataService;
         }
@@ -34,76 +34,75 @@ namespace Optimiser.Services
 
         private List<Break> OrderCommercials(List<Break> breaks)
         {
-            breaks.ForEach((br) => 
+            breaks.ForEach((br) =>
             {
-                DoRecursive(br.Commercials);
+                OrderCommercials(br.Commercials);
             });
             return breaks;
         }
 
-
-
-        public void DoRecursive(List<Commercial> commercials) 
+        private void OrderCommercials(IList<Commercial> commercials)
         {
-             var rep = commercials.FirstOrDefault(p => commercials.IndexOf(p) + 1 < commercials.Count 
-                       && p.CommercialType == commercials.ElementAt(commercials.IndexOf(p) + 1).CommercialType);
-            
-            if (rep != null)
+            var rep = commercials.FirstOrDefault(p => 
+                                commercials.IndexOf(p) + 1 < commercials.Count
+                                && p.CommercialType == commercials.ElementAt(commercials.IndexOf(p) + 1).CommercialType);
+
+            if (rep == null) return;
+
+            var nonRep = commercials.FirstOrDefault(p => 
+                                   p.CommercialType != rep.CommercialType
+                                   && commercials.IndexOf(p) + 1 == commercials.Count);
+            if (nonRep != null)
             {
-                var nonRep = commercials.FirstOrDefault(p => p.CommercialType != rep.CommercialType 
-                             && commercials.IndexOf(p) + 1 == commercials.Count);
+                var tmp = rep;
+                commercials.Remove(rep);
+                commercials.Add(tmp);
+                OrderCommercials(commercials);
+                return;
+            }
 
-                if (nonRep != null) 
-                {
-                    var tmp = rep;
-                    commercials.Remove(rep);
-                    commercials.Add(tmp);
-                    DoRecursive(commercials);
-                    return;
-                }
+            nonRep = commercials.FirstOrDefault(p => 
+                     p.CommercialType != rep.CommercialType
+                     && commercials.IndexOf(p) + 1 < commercials.Count
+                     && rep.CommercialType != commercials.ElementAt(commercials.IndexOf(p) + 1).CommercialType);
 
-                nonRep = commercials.FirstOrDefault(p => p.CommercialType != rep.CommercialType 
-                         && commercials.IndexOf(p) + 1 < commercials.Count 
-                         && rep.CommercialType != commercials.ElementAt(commercials.IndexOf(p) + 1).CommercialType);
-               
-                if (nonRep != null)
-                {
-                    var tmp = rep;
-                    commercials.Remove(rep);
-                    commercials.Insert(commercials.IndexOf(nonRep) + 1, tmp);
-                    DoRecursive(commercials);
-                    return;
-                }
+            if (nonRep != null)
+            {
+                var tmp = rep;
+                commercials.Remove(rep);
+                commercials.Insert(commercials.IndexOf(nonRep) + 1, tmp);
+                OrderCommercials(commercials);
+                return;
+            }
 
-                nonRep = commercials.FirstOrDefault(p => p.CommercialType != rep.CommercialType
-                         && commercials.IndexOf(p) == 0);
+            nonRep = commercials.FirstOrDefault(p => 
+                     p.CommercialType != rep.CommercialType
+                     && commercials.IndexOf(p) == 0);
 
-                if (nonRep != null)
-                {
-                    var tmp = rep;
-                    commercials.Remove(rep);
-                    commercials.Insert(0, tmp);
-                    DoRecursive(commercials);
-                    return;
-                }
+            if (nonRep != null)
+            {
+                var tmp = rep;
+                commercials.Remove(rep);
+                commercials.Insert(0, tmp);
+                OrderCommercials(commercials);
+                return;
+            }
 
-                nonRep = commercials.FirstOrDefault(p => p.CommercialType != rep.CommercialType
-                         && commercials.IndexOf(p) - 1 >= 0
-                         && rep.CommercialType != commercials.ElementAt(commercials.IndexOf(p) - 1).CommercialType);
+            nonRep = commercials.FirstOrDefault(p => 
+                     p.CommercialType != rep.CommercialType
+                     && commercials.IndexOf(p) - 1 >= 0 && rep.CommercialType !=
+                     commercials.ElementAt(commercials.IndexOf(p) - 1).CommercialType);
 
-                if (nonRep != null)
-                {
-                    var tmp = rep;
-                    commercials.Remove(rep);
-                    commercials.Insert(commercials.IndexOf(nonRep), tmp);
-                    DoRecursive(commercials);
-                    return;
-                }
+            if (nonRep != null)
+            {
+                var tmp = rep;
+                commercials.Remove(rep);
+                commercials.Insert(commercials.IndexOf(nonRep), tmp);
+                OrderCommercials(commercials);
             }
         }
 
-
-        public void ProcessRecursively(List<Break> breaks, Commercial currComm, int start)
+        private void ProcessRecursively(List<Break> breaks, Commercial currComm, int start)
         {
             Break bestBr = null;
             if (start == breaks.Count) return;
@@ -112,12 +111,12 @@ namespace Optimiser.Services
             foreach (var br in breakIntern)
             {
                 if (bestBr == null) { bestBr = br; continue; }
-                var newScore = br.Ratings.FirstOrDefault(p => p.DemoType == currComm.TargetDemo).Score;
-                var currentScore = bestBr.Ratings.FirstOrDefault(p => p.DemoType == currComm.TargetDemo).Score;
+                var newScore = br.Ratings?.FirstOrDefault(p => p.DemoType == currComm.TargetDemo)?.Score;
+                var currentScore = bestBr.Ratings?.FirstOrDefault(p => p.DemoType == currComm.TargetDemo)?.Score;
                 if (newScore > currentScore) bestBr = br;
             }
 
-            if (bestBr.Commercials == null || !bestBr.Commercials.Any())
+            if (bestBr != null && (bestBr.Commercials == null || !bestBr.Commercials.Any()))
             {
                 currComm.CurrentRating = bestBr.Ratings.FirstOrDefault(p => p.DemoType == currComm.TargetDemo);
                 bestBr.Commercials = new List<Commercial>() { currComm };
@@ -142,7 +141,7 @@ namespace Optimiser.Services
                         MoveItem(breaks.IndexOf(bestBr), start, breaks);
                         ProcessRecursively(breaks, toBeMoved, ++start);
                     }
-                    else 
+                    else
                     {
                         MoveItem(breaks.IndexOf(bestBr), start, breaks);
                         ProcessRecursively(breaks, currComm, ++start);
@@ -184,7 +183,7 @@ namespace Optimiser.Services
 
         private bool IsTypeAllowedInBrake(Break bestBr, Commercial currComm)
         {
-            return bestBr.DisallowedCommTypes == null || !bestBr.DisallowedCommTypes.Any(d => d == currComm.CommercialType);
+            return bestBr.DisallowedCommTypes == null || bestBr.DisallowedCommTypes.All(d => d != currComm.CommercialType);
         }
 
         private bool ShouldBeInserted(Commercial currComm, Break optmBr)
@@ -195,10 +194,9 @@ namespace Optimiser.Services
             return optmBr.Commercials.Any(p => p.CurrentRating.Score < newScore);
         }
 
-
         private int GetScore(Break br, Commercial comm)
         {
-            return br.Ratings.FirstOrDefault(p => p.DemoType == comm.TargetDemo).Score;
+            return br?.Ratings?.FirstOrDefault(p => p.DemoType == comm.TargetDemo)?.Score ?? 0;
         }
     }
 }

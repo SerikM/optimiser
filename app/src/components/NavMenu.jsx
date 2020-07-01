@@ -5,11 +5,10 @@ import '../index.css';
 
 
 class NavMenu extends React.PureComponent {
-    constructor(props) 
-    {
+    constructor(props) {
         super(props);
-        this.state = 
-        { }
+        this.state =
+            {}
     }
 
     render() {
@@ -17,7 +16,7 @@ class NavMenu extends React.PureComponent {
             <header>
                 <Navbar className="navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3" dark>
                     <Container>
-                        <NavbarBrand tag={Link} to="/">Commercial Optimiser</NavbarBrand>
+                        <NavbarBrand tag={Link} to="/">Optimiser</NavbarBrand>
                     </Container>
                 </Navbar>
             </header>

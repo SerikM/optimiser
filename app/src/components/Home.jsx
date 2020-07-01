@@ -89,13 +89,17 @@ class Home extends React.Component {
     render() {
         return (
             <React.Fragment>
-
-                <div className="total">
-                    {this.state.isLoading ? <Spinner isLoading={this.state.isLoading} /> :
-                        this.state.total > 0 && <h2>{this.state.total}</h2>
-                    }
+                <div className="row">
+                    <div className="col-2 refresh-cont">
+                        <a className="refresh d-inline d-md-none d-lg-none" href="#" onClick={() => window.location.reload(false)}> Refresh</a>
+                    </div>
+                    <div className="total col-10">
+                        {this.state.isLoading ? <Spinner isLoading={this.state.isLoading} /> :
+                            this.state.total > 0 && <h2>{this.state.total}</h2>
+                        }
+                    </div>
                 </div>
-                <hr></hr>
+
                 <div className="main">
                     <div className="row row-header">
                         <div className="col-2">
@@ -105,8 +109,9 @@ class Home extends React.Component {
                         </div>
                         <div className="col-10">
                             <div className="row">
-                                <div className="col-7 col-md-8">Demographic</div>
-                                <div className="col-5 col-md-4">Rating</div>
+                                <div className="col-7 d-block d-sm-none d-md-none">Demo</div>
+                                <div className="col-7 d-none d-sm-block d-md-block">Demographic</div>
+                                <div className="col-5">Rating</div>
                             </div>
                         </div>
                     </div>
@@ -121,11 +126,11 @@ class Home extends React.Component {
                                 <div className="row">
                                     {br.Ratings && br.Ratings.map((rating, j) =>
                                         <React.Fragment key={j + 5}>
-                                            <div key={j + 1} className="col-7 col-md-8">
+                                            <div key={j + 1} className="col-7">
                                                 <span key={j + 2}></span>  {rating.DemoName}
                                             </div>
 
-                                            <div key={j + 3} className="col-5 col-md-4">
+                                            <div key={j + 3} className="col-5">
                                                 <input key={`${i}${j}`} type="number" disabled={this.state.errors && this.state.current !== `${i}${j}`} inputMode="numeric" onChange={(e) => this.updateRating(e.target, br.Id, rating.DemoName, `${i}${j}`)} defaultValue={rating.Score} />
                                             </div>
                                         </React.Fragment>
@@ -138,21 +143,21 @@ class Home extends React.Component {
                 <div className="main lower">
                     <React.Fragment>
                         <div className="row row-header">
-
                             <div className="col-2">
                                 <div className="row">
-                                    <div className="col-12">Break</div>
+                                    <div className="col-12 d-none d-sm-block d-md-block">Break</div>
+                                    <div className="col-12 d-block d-sm-none d-md-none">Brk</div>
                                 </div>
                             </div>
-
                             <div className="col-10">
                                 <div className="row">
-                                    <div className="col-4">Commercial</div>
-                                    <div className="col-4">Demographic</div>
+                                    <div className="col-4 d-none d-sm-block d-md-block">Commercial</div>
+                                    <div className="col-4 d-none d-sm-block d-md-block">Demographic</div>
+                                    <div className="col-4 d-block d-sm-none d-md-none">Comm</div>
+                                    <div className="col-4 d-block d-sm-none d-md-none">Demo</div>
                                     <div className="col-4">Type</div>
                                 </div>
                             </div>
-
                         </div>
                         {this.state.breaksWithCommercials && this.state.breaksWithCommercials.map((br, i) =>
                             <div key={i} className="row align-items-center">
@@ -165,17 +170,17 @@ class Home extends React.Component {
                                     <div className="row">
                                         {br.Commercials && br.Commercials.map((comm, k) =>
                                             <React.Fragment key={k + 'e'}>
-                                                <div key={k + 'b'} className="col-4">
+                                                <div key={k + 'b'} className="col-3 col-sm-4 col-md-4">
                                                     {this.state.isLoading ? <Spinner isLoading={this.state.isLoading} /> :
                                                         comm.Id
                                                     }
                                                 </div>
-                                                <div key={k + 'c'} className="col-4">
+                                                <div key={k + 'c'} className="col-4 col-sm-4 col-md-4">
                                                     {this.state.isLoading ? <Spinner isLoading={this.state.isLoading} /> :
                                                         comm.TargetDemoName
                                                     }
                                                 </div>
-                                                <div key={k + 'd'} className="col-4">
+                                                <div key={k + 'd'} className="col-5 col-sm-4 col-md-4">
                                                     {this.state.isLoading ? <Spinner isLoading={this.state.isLoading} /> :
                                                         comm.CommercialTypeName
                                                     }
