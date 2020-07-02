@@ -131,17 +131,10 @@ namespace Optimiser.Services
         /// <param name="start"></param>
         private void ProcessRecursively(List<Break> breaks, Commercial currComm, int start)
         {
-            Break bestBr = null;
             if (start == breaks.Count) return;
 
             var breakIntern = breaks.Skip(start).ToList();
-            foreach (var br in breakIntern)
-            {
-                if (bestBr == null) { bestBr = br; continue; }
-                var newScore = br.Ratings?.FirstOrDefault(p => p.DemoType == currComm.TargetDemo)?.Score;
-                var currentScore = bestBr.Ratings?.FirstOrDefault(p => p.DemoType == currComm.TargetDemo)?.Score;
-                if (newScore > currentScore) bestBr = br;
-            }
+            Break bestBr = GetBestBreak(breakIntern, currComm);
 
             if (bestBr != null && (bestBr.Commercials == null || !bestBr.Commercials.Any()) && IsTypeAllowedInBrake(bestBr, currComm))
             {
@@ -199,6 +192,25 @@ namespace Optimiser.Services
                     ProcessRecursively(breaks, currComm, ++start);
                 }
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="breakIntern"></param>
+        /// <param name="currComm"></param>
+        /// <returns></returns>
+        private Break GetBestBreak(List<Break> breakIntern, Commercial currComm)
+        {
+            Break bestBr = null;
+            foreach (var br in breakIntern)
+            {
+                if (bestBr == null) { bestBr = br; continue; }
+                var newScore = br.Ratings?.FirstOrDefault(p => p.DemoType == currComm.TargetDemo)?.Score;
+                var currentScore = bestBr.Ratings?.FirstOrDefault(p => p.DemoType == currComm.TargetDemo)?.Score;
+                if (newScore > currentScore) bestBr = br;
+            }
+            return bestBr;
         }
 
         /// <summary>
