@@ -34,7 +34,6 @@ namespace Optimiser.Services
         public async Task<List<Break>> GetOptimalRatings(List<Break> breaks)
         {
             var commercials = await _dataService.GetItems<Commercial>();
-
             int start = 0;
             foreach (var comm in commercials)
             {
@@ -135,13 +134,13 @@ namespace Optimiser.Services
 
             var breakIntern = breaks.Skip(start).ToList();
             var bestBr = GetBestBreak(breakIntern, currComm);
-
-            if (bestBr != null && (bestBr.Commercials == null || !bestBr.Commercials.Any()) && IsTypeAllowedInBrake(bestBr, currComm))
+            if (bestBr == null) return;
+            if (bestBr.Commercials == null || !bestBr.Commercials.Any())
             {
                 bestBr.Commercials = new List<Commercial>();
                 AddCommercialAtIndex(bestBr, currComm, 0);
             }
-            else if (bestBr.Commercials!= null && bestBr.Commercials.Count < MaxNumberOfCommercialsPerBrake && IsTypeAllowedInBrake(bestBr, currComm))
+            else if (bestBr.Commercials.Count < MaxNumberOfCommercialsPerBrake)
             {
                 var newScore = GetScore(bestBr, currComm);
                 if (bestBr.Commercials.Count(p => p.CommercialType == currComm.CommercialType) < MaxNumberOfCommercialsPerBrakeWithSameType)
@@ -167,7 +166,7 @@ namespace Optimiser.Services
             }
             else
             {
-                if (IsTypeAllowedInBrake(bestBr, currComm) && ShouldBeInserted(currComm, bestBr))
+                if (ShouldBeInserted(currComm, bestBr))
                 {
                     var newScore = GetScore(bestBr, currComm);
                     bestBr.Commercials = bestBr.Commercials.OrderByDescending(d => d.CurrentRating.Score).ToList();
@@ -206,11 +205,12 @@ namespace Optimiser.Services
         /// <param name="breakIntern"></param>
         /// <param name="currComm"></param>
         /// <returns></returns>
-        private Break GetBestBreak(List<Break> breakIntern, Commercial currComm)
+        public Break GetBestBreak(List<Break> breakIntern, Commercial currComm)
         {
             Break bestBr = null;
             foreach (var br in breakIntern)
             {
+                if (!IsTypeAllowedInBrake(br, currComm)) continue;
                 if (bestBr == null) { bestBr = br; continue; }
                 var newScore = br.Ratings?.FirstOrDefault(p => p.DemoType == currComm.TargetDemo)?.Score;
                 var currentScore = bestBr.Ratings?.FirstOrDefault(p => p.DemoType == currComm.TargetDemo)?.Score;
@@ -254,8 +254,11 @@ namespace Optimiser.Services
         {
             if (optmBr.Commercials == null) return false;
             var newScore = GetScore(optmBr, currComm);
-            if (optmBr.Commercials.Count(p => p.CommercialType == currComm.CommercialType) == MaxNumberOfCommercialsPerBrakeWithSameType &&
-                !optmBr.Commercials.Any(d => d.CommercialType == currComm.CommercialType && d.CurrentRating.Score < newScore)) return false;
+            if (optmBr.Commercials.Count(p => p.CommercialType == currComm.CommercialType) 
+                  == MaxNumberOfCommercialsPerBrakeWithSameType 
+                  && !optmBr.Commercials.Any(d => d.CommercialType == currComm.CommercialType 
+                  && d.CurrentRating.Score < newScore)) return false;
+
             return optmBr.Commercials.Any(p => p.CurrentRating.Score < newScore);
         }
 
