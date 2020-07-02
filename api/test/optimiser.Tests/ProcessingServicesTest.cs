@@ -10,7 +10,7 @@ namespace Optimiser.Tests
     public class ProcessingServicesTest
     {
         [Fact]
-        public void TestStartSatEndSunday()
+        public void TestGetOptimalRatings()
         {
             var dataMock = new Mock<IDbDataService<IData>>();
             var brksWithRatings = MockData.GetDefaultBreaks();
@@ -80,7 +80,7 @@ namespace Optimiser.Tests
         }
 
         [Fact]
-        public void TestStartSundayEndSunday()
+        public void TestOrderCommercials()
         {
             var dataMock = new Mock<IDbDataService<IData>>();
             var unordered = MockData.GetBreaksWithUnorderedCommercials();

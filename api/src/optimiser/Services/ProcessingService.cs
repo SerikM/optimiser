@@ -143,12 +143,12 @@ namespace Optimiser.Services
                 if (newScore > currentScore) bestBr = br;
             }
 
-            if (bestBr != null && (bestBr.Commercials == null || !bestBr.Commercials.Any()))
+            if (bestBr != null && (bestBr.Commercials == null || !bestBr.Commercials.Any()) && IsTypeAllowedInBrake(bestBr, currComm))
             {
                 currComm.CurrentRating = bestBr.Ratings.FirstOrDefault(p => p.DemoType == currComm.TargetDemo);
                 bestBr.Commercials = new List<Commercial>() { currComm };
             }
-            else if (bestBr.Commercials.Count < MaxNumberOfCommercialsPerBrake && IsTypeAllowedInBrake(bestBr, currComm))
+            else if (bestBr.Commercials!= null && bestBr.Commercials.Count < MaxNumberOfCommercialsPerBrake && IsTypeAllowedInBrake(bestBr, currComm))
             {
                 var newScore = GetScore(bestBr, currComm);
                 if (bestBr.Commercials.Count(p => p.CommercialType == currComm.CommercialType) < MaxNumberOfCommercialsPerBrakeWithSameType)
