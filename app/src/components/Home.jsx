@@ -90,10 +90,10 @@ class Home extends React.Component {
         return (
             <React.Fragment>
                 <div className="row">
-                    <div onClick={() => window.location.reload(false)} className="col-2 refresh-cont">
+                    <div onClick={() => window.location.reload(false)} className="col-3 refresh-cont">
                         <a className="refresh d-inline d-md-none d-lg-none" href="#" > Refresh</a>
                     </div>
-                    <div className="total col-10">
+                    <div className="total col-9">
                         {this.state.isLoading ? <Spinner isLoading={this.state.isLoading} /> :
                             this.state.total > 0 && <h2>{this.state.total}</h2>
                         }
@@ -182,7 +182,10 @@ class Home extends React.Component {
                                                 </div>
                                                 <div key={k + 'd'} className="col-5 col-sm-4 col-md-4">
                                                     {this.state.isLoading ? <Spinner isLoading={this.state.isLoading} /> :
-                                                        comm.CommercialTypeName
+                                                        <div>
+                                                            <span className="d-none d-sm-block d-md-block">{comm.CommercialTypeName}</span>
+                                                            <span className="d-block d-sm-none d-md-none">{comm.CommercialTypeNameMobile}</span>
+                                                        </div>
                                                     }
                                                 </div>
                                             </React.Fragment>

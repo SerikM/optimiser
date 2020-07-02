@@ -18,6 +18,8 @@ namespace Optimiser.Models
         [DynamoDBIgnore]
         public string CommercialTypeName => Enum.GetName(typeof(CommercialType), CommercialType);
         [DynamoDBIgnore]
+        public string CommercialTypeNameMobile =>  Enum.GetName(typeof(CommercialType), CommercialType).Substring(0, 6);
+        [DynamoDBIgnore]
         public string TargetDemoName => Enum.GetName(typeof(DemographicType), TargetDemo);
     }
 }

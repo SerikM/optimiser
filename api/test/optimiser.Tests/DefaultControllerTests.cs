@@ -1,34 +1,36 @@
-﻿//using Xunit;
-//using Moq;
-//using Optimiser.Services;
-//using Optimiser.Controllers;
-//using Microsoft.AspNetCore.Mvc;
-//using System.Threading.Tasks;
+﻿using Xunit;
+using Moq;
+using Optimiser.Services;
+using Optimiser.Controllers;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using Optimiser.Models;
 
-//namespace Optimiser.Tests
-//{
-//    public class DefaultControllerTests
-//    {
-//        [Fact]
-//        public void TestGetOptimiser()
-//        {
-//            var serviceMock = new Mock<ICalculationService>();
-//            serviceMock.Setup(p => p.GetOptimiser(It.IsAny<string>(), It.IsAny<string>())).Returns(() => new Task<int>(null));
-//            var mockController = new DefaultController(serviceMock.Object);
-//            var response = mockController.GetData("","").Result as BadRequestObjectResult;
-//            Assert.NotNull(response);
-//            Assert.Equal("failed to process request", response.Value);
-//        }
+namespace Optimiser.Tests
+{
+    public class DefaultControllerTests
+    {
+        [Fact]
+        public void TestOptimise()
+        {
+            var serviceMock = new Mock<IProcessingService>();
+            serviceMock.Setup(p => p.GetOptimalRatings(It.IsAny<List<Break>>())).Returns(() => new Task<List<Break>>(null));
+            var mockController = new DefaultController(serviceMock.Object);
+            var response = mockController.Optimise(null).Result as BadRequestObjectResult;
+            Assert.NotNull(response);
+            Assert.Equal("failed to process request", response.Value);
+        }
 
-//        [Fact]
-//        public void TestGetOptimiserSuccess()
-//        {
-//            var serviceMock = new Mock<ICalculationService>();
-//            serviceMock.Setup(p => p.GetOptimiser(It.IsAny<string>(), It.IsAny<string>())).Returns(() => Task.FromResult(20));
-//            var mockController = new DefaultController(serviceMock.Object);
-//            var response = mockController.GetData("01/02/2020", "01/03/2020").Result as OkObjectResult;
-//            Assert.NotNull(response);
-//            Assert.Equal("20", response.Value);
-//        }
-//    }
-//}
+        [Fact]
+        public void TestGetOptimiserSuccess()
+        {
+            var serviceMock = new Mock<IProcessingService>();
+            serviceMock.Setup(p => p.GetOptimalRatings(It.IsAny<List<Break>>())).Returns(() => Task.FromResult(MockData.GetDefaultBreaks()));
+            var mockController = new DefaultController(serviceMock.Object);
+            var response = mockController.Optimise(MockData.GetBreaksWithOrderedCommercials()).Result as OkObjectResult;
+            Assert.NotNull(response);
+            Assert.Equal(MockData.GetSerializedResponse(), response.Value);
+        }
+    }
+}

@@ -6,7 +6,7 @@ namespace Optimiser.Services
 {
     public interface IProcessingService
     {
-        Task<List<Break>> GetDefaultData();
+        List<Break> GetDefaultData();
         Task<List<Break>> GetOptimalRatings(List<Break> breaks = null);
         bool SeedData();
     }

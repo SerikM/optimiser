@@ -16,11 +16,21 @@ namespace Optimiser.Services
             _dataService = dataService;
         }
 
-        public async Task<List<Break>> GetDefaultData()
+        /// <summary>
+        /// retrieves default breaks data from the datastore
+        /// </summary>
+        /// <returns></returns>
+        public List<Break> GetDefaultData()
         {
-            return await _dataService.GetItems<Break>();
+            return  _dataService.GetItems<Break>().Result?.OrderBy(d => d.Id).ToList();
         }
 
+        /// <summary>
+        /// serves as the main trigger to start the sorting 
+        /// and ordering of commercials into optimal position
+        /// </summary>
+        /// <param name="breaks"></param>
+        /// <returns></returns>
         public async Task<List<Break>> GetOptimalRatings(List<Break> breaks)
         {
             var commercials = await _dataService.GetItems<Commercial>();
@@ -33,7 +43,12 @@ namespace Optimiser.Services
             return OrderCommercials(breaks.OrderBy(p => p.Id).ToList());
         }
 
-        private List<Break> OrderCommercials(List<Break> breaks)
+        /// <summary>
+        /// initiates reordering of commercials within each brake in a list of brakes
+        /// </summary>
+        /// <param name="breaks"></param>
+        /// <returns>finalised list of brakes</returns>
+        public List<Break> OrderCommercials(List<Break> breaks)
         {
             breaks.ForEach((br) =>
             {
@@ -42,6 +57,11 @@ namespace Optimiser.Services
             return breaks;
         }
 
+        /// <summary>
+        /// iterates a list of commercials and reorders commercials in 
+        /// such way that no commercials of the same type are placed next to each other within a brake
+        /// </summary>
+        /// <param name="commercials"></param>
         private void OrderCommercials(IList<Commercial> commercials)
         {
             var rep = commercials.FirstOrDefault(p => 
@@ -49,7 +69,6 @@ namespace Optimiser.Services
                                 && p.CommercialType == commercials.ElementAt(commercials.IndexOf(p) + 1).CommercialType);
 
             if (rep == null) return;
-
             var nonRep = commercials.FirstOrDefault(p => 
                                    p.CommercialType != rep.CommercialType
                                    && commercials.IndexOf(p) + 1 == commercials.Count);
@@ -103,6 +122,13 @@ namespace Optimiser.Services
             }
         }
 
+        /// <summary>
+        /// recursively iterates over the given collection of breaks and finds the best allocation 
+        /// for a given commercial respecting given restrictions
+        /// </summary>
+        /// <param name="breaks"></param>
+        /// <param name="currComm"></param>
+        /// <param name="start"></param>
         private void ProcessRecursively(List<Break> breaks, Commercial currComm, int start)
         {
             Break bestBr = null;
@@ -175,6 +201,12 @@ namespace Optimiser.Services
             }
         }
 
+        /// <summary>
+        /// moves an item within a list
+        /// </summary>
+        /// <param name="oldIndex"></param>
+        /// <param name="newIndex"></param>
+        /// <param name="items"></param>
         private void MoveItem(int oldIndex, int newIndex, List<Break> items)
         {
             var target = items.ElementAt(oldIndex);
@@ -182,11 +214,24 @@ namespace Optimiser.Services
             items.Insert(newIndex, target);
         }
 
+        /// <summary>
+        /// checks if a commercial can be added to the brake
+        /// </summary>
+        /// <param name="bestBr"></param>
+        /// <param name="currComm"></param>
+        /// <returns></returns>
         private bool IsTypeAllowedInBrake(Break bestBr, Commercial currComm)
         {
             return bestBr.DisallowedCommTypes == null || bestBr.DisallowedCommTypes.All(d => d != currComm.CommercialType);
         }
 
+        /// <summary>
+        /// checks if the gived commercial has a rating higher than other commercials 
+        /// within a specific break
+        /// </summary>
+        /// <param name="currComm"></param>
+        /// <param name="optmBr"></param>
+        /// <returns></returns>
         private bool ShouldBeInserted(Commercial currComm, Break optmBr)
         {
             var newScore = GetScore(optmBr, currComm);
@@ -195,11 +240,22 @@ namespace Optimiser.Services
             return optmBr.Commercials.Any(p => p.CurrentRating.Score < newScore);
         }
 
+        /// <summary>
+        /// retrieves the score a brake has for a particular commercial
+        /// </summary>
+        /// <param name="br"></param>
+        /// <param name="comm"></param>
+        /// <returns></returns>
         private int GetScore(Break br, Commercial comm)
         {
             return br?.Ratings?.FirstOrDefault(p => p.DemoType == comm.TargetDemo)?.Score ?? 0;
         }
 
+        /// <summary>
+        /// can be trigger from a controller or another service in order
+        /// to seed brakes and commercials in the DynamoDb
+        /// </summary>
+        /// <returns>true if data seed is successful</returns>
         public bool SeedData() 
         {
           return  _dataService.SeedItems();

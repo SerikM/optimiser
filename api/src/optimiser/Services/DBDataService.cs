@@ -4,9 +4,7 @@ using System.Threading.Tasks;
 using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
-using Amazon.Runtime;
 using Amazon.XRay.Recorder.Core;
-using Optimiser.Enums;
 using Optimiser.Models;
 
 namespace Optimiser.Services
@@ -22,7 +20,11 @@ namespace Optimiser.Services
             _ddbContext = new DynamoDBContext(dynamoDbClient, conf);
         }
 
-
+        /// <summary>
+        /// connects to DynamoDb and retrieves data of the the type T provided by the client
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns>a list of typed objects from the database</returns>
         public async Task<List<T>> GetItems<T>()
         {
             if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development") AWSXRayRecorder.Instance.BeginSegment("dynamo db call");
@@ -42,42 +44,22 @@ namespace Optimiser.Services
             return page;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public bool SeedItems()
         {
             if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development") AWSXRayRecorder.Instance.BeginSegment("dynamo db call");
             try
             {
                 var brBatch = _ddbContext.CreateBatchWrite<Break>();
-                brBatch.AddPutItems(new List<Break> {
-                    new Break() { Id = 1, Ratings = new List<Rating>{
-                    new Rating() { Score = 80, DemoType = DemographicType.Women },
-                    new Rating() { Score = 100, DemoType = DemographicType.Men },
-                    new Rating() { Score = 250, DemoType = DemographicType.Total }}},
-                    new Break() { Id = 2, DisallowedCommTypes =
-                    new List<CommercialType> { CommercialType.Finance }, Ratings = new List<Rating>{
-                    new Rating() { Score = 50, DemoType = DemographicType.Women },
-                    new Rating() { Score = 120, DemoType = DemographicType.Men },
-                    new Rating() { Score = 200, DemoType = DemographicType.Total }}},
-                    new Break() { Id = 3, Ratings = new List<Rating>{
-                    new Rating() { Score = 350, DemoType = DemographicType.Women },
-                    new Rating() { Score = 150, DemoType = DemographicType.Men },
-                    new Rating() { Score = 500, DemoType = DemographicType.Total }}}
-                });
+                brBatch.AddPutItems(DefaultData.GetDefaultBreaks());
 
 
                 var config = new DynamoDBOperationConfig();
                 var commBatch = _ddbContext.CreateBatchWrite<Commercial>(config);
-                commBatch.AddPutItems(new List<Commercial> {
-                new Commercial() { Id = 1, CommercialType = CommercialType.Automotive, TargetDemo = DemographicType.Women },
-                new Commercial() { Id = 2, CommercialType = CommercialType.Travel, TargetDemo = DemographicType.Men },
-                new Commercial() { Id = 3, CommercialType = CommercialType.Travel, TargetDemo = DemographicType.Total },
-                new Commercial() { Id = 4, CommercialType = CommercialType.Automotive, TargetDemo = DemographicType.Men },
-                new Commercial() { Id = 5, CommercialType = CommercialType.Automotive, TargetDemo = DemographicType.Men },
-                new Commercial() { Id = 6, CommercialType = CommercialType.Finance, TargetDemo = DemographicType.Women },
-                new Commercial() { Id = 7, CommercialType = CommercialType.Finance, TargetDemo = DemographicType.Men },
-                new Commercial() { Id = 8, CommercialType = CommercialType.Automotive, TargetDemo = DemographicType.Total },
-                new Commercial() { Id = 9, CommercialType = CommercialType.Travel, TargetDemo = DemographicType.Women }
-                });
+                commBatch.AddPutItems(DefaultData.GetDefaultCommercials());
 
                 var superBatch = new MultiTableBatchWrite(brBatch, commBatch);
                 var result = superBatch.ExecuteAsync().Status;

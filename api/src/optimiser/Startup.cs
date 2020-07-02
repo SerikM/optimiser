@@ -6,7 +6,6 @@ using Microsoft.Extensions.Hosting;
 using Amazon.DynamoDBv2;
 using Amazon.XRay.Recorder.Core;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
-using Microsoft.Net.Http.Headers;
 using Optimiser.Models;
 using Optimiser.Services;
 
@@ -28,7 +27,7 @@ namespace Optimiser
             services.AddCors(options =>
             {
                 options.AddPolicy(name: CorsPolicyName,
-                                  builder => { builder.WithOrigins("*").AllowAnyHeader().AllowAnyMethod();});
+                                  builder => { builder.WithOrigins("*").AllowAnyHeader().AllowAnyMethod(); });
             });
             services.AddOptions();
             services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
@@ -38,7 +37,7 @@ namespace Optimiser
             services.AddTransient<IDbDataService<IData>, DbDataService<IData>>();
             services.AddAWSService<IAmazonDynamoDB>();
             services.AddControllers();
-    }
+        }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
