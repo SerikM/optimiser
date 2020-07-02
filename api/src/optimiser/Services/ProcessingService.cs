@@ -134,30 +134,27 @@ namespace Optimiser.Services
             if (start == breaks.Count) return;
 
             var breakIntern = breaks.Skip(start).ToList();
-            Break bestBr = GetBestBreak(breakIntern, currComm);
+            var bestBr = GetBestBreak(breakIntern, currComm);
 
             if (bestBr != null && (bestBr.Commercials == null || !bestBr.Commercials.Any()) && IsTypeAllowedInBrake(bestBr, currComm))
             {
-                currComm.CurrentRating = bestBr.Ratings.FirstOrDefault(p => p.DemoType == currComm.TargetDemo);
-                bestBr.Commercials = new List<Commercial>() { currComm };
+                bestBr.Commercials = new List<Commercial>();
+                AddCommercialAtIndex(bestBr, currComm, 0);
             }
             else if (bestBr.Commercials!= null && bestBr.Commercials.Count < MaxNumberOfCommercialsPerBrake && IsTypeAllowedInBrake(bestBr, currComm))
             {
                 var newScore = GetScore(bestBr, currComm);
                 if (bestBr.Commercials.Count(p => p.CommercialType == currComm.CommercialType) < MaxNumberOfCommercialsPerBrakeWithSameType)
                 {
-                    currComm.CurrentRating = bestBr.Ratings.FirstOrDefault(p => p.DemoType == currComm.TargetDemo);
-                    bestBr.Commercials.Add(currComm);
+                    AddCommercialAtIndex(bestBr, currComm, bestBr.Commercials.Count);
                 }
                 else
                 {
                     var toBeMoved = bestBr.Commercials.FirstOrDefault(d => d.CommercialType == currComm.CommercialType && d.CurrentRating.Score < newScore);
                     if (toBeMoved != null)
                     {
-                        currComm.CurrentRating = bestBr.Ratings.FirstOrDefault(d => d.DemoType == currComm.TargetDemo);
-                        bestBr.Commercials.Insert(bestBr.Commercials.IndexOf(toBeMoved), currComm);
+                        AddCommercialAtIndex(bestBr, currComm, bestBr.Commercials.IndexOf(toBeMoved));
                         bestBr.Commercials.Remove(toBeMoved);
-
                         MoveItem(breaks.IndexOf(bestBr), start, breaks);
                         ProcessRecursively(breaks, toBeMoved, ++start);
                     }
@@ -170,15 +167,13 @@ namespace Optimiser.Services
             }
             else
             {
-                if (ShouldBeInserted(currComm, bestBr) && IsTypeAllowedInBrake(bestBr, currComm))
+                if (IsTypeAllowedInBrake(bestBr, currComm) && ShouldBeInserted(currComm, bestBr))
                 {
                     var newScore = GetScore(bestBr, currComm);
                     bestBr.Commercials = bestBr.Commercials.OrderByDescending(d => d.CurrentRating.Score).ToList();
 
                     var toBeMoved = bestBr.Commercials.FirstOrDefault(d => d.CurrentRating.Score < newScore);
-
-                    currComm.CurrentRating = bestBr.Ratings.FirstOrDefault(d => d.DemoType == currComm.TargetDemo);
-                    bestBr.Commercials.Insert(bestBr.Commercials.IndexOf(toBeMoved), currComm);
+                    AddCommercialAtIndex(bestBr, currComm, bestBr.Commercials.IndexOf(toBeMoved));
 
                     var detachedCom = bestBr.Commercials.Last();
                     bestBr.Commercials.Remove(detachedCom);
@@ -192,6 +187,17 @@ namespace Optimiser.Services
                     ProcessRecursively(breaks, currComm, ++start);
                 }
             }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="bestBr"></param>
+        /// <param name="currComm"></param>
+        /// <param name="index"></param>
+        private void AddCommercialAtIndex(Break bestBr, Commercial currComm, int index)
+        {
+            currComm.CurrentRating = bestBr.Ratings.FirstOrDefault(p => p.DemoType == currComm.TargetDemo);
+            bestBr.Commercials.Insert(index, currComm);
         }
 
         /// <summary>
@@ -246,6 +252,7 @@ namespace Optimiser.Services
         /// <returns></returns>
         private bool ShouldBeInserted(Commercial currComm, Break optmBr)
         {
+            if (optmBr.Commercials == null) return false;
             var newScore = GetScore(optmBr, currComm);
             if (optmBr.Commercials.Count(p => p.CommercialType == currComm.CommercialType) == MaxNumberOfCommercialsPerBrakeWithSameType &&
                 !optmBr.Commercials.Any(d => d.CommercialType == currComm.CommercialType && d.CurrentRating.Score < newScore)) return false;
