@@ -76,7 +76,7 @@ aws cloudformation deploy --template-file ./sam-template.yml --stack-name optimi
 ```
 
 ## DynamoDb data seed instructions
-> initially the data tables are provisioned empty. In order to populate them with data the PUT api can be used, provided the api where lambda has been deployed is known. This will populate the tables with default data defined in code.
+> initially the data tables are provisioned empty. In order to populate them with data the PUT api can be used, provided the url where lambda api has been deployed is known. This will populate the tables with default data defined in code.
 ```shell
 PUT https://[lambda-hostname]/Prod/v1/default
 ```
