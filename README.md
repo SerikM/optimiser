@@ -18,7 +18,7 @@ The application supports all types of mobile devices and works well on desktops.
 
 - This application follows the modern serverless design and the best practices of building and hosting cloud based serverless public facing applications. 
 - The application consists of two main parts - the `Reactjs UI app` and the `.NET Core Lambda api`.
-- This dessign achieves great economy as it makes unnecessary running a full-scale web server and this is also in line with all the principles of the microservices architecture.
+- This design achieves great economy as it makes unnecessary running a full-scale web server and this is also in line with all the principles of the microservices architecture.
 
 ## UI app
 - The UI app is built using ReactJs and Bootstrap 4. It is compiled and then copied over as a package of static files into AWS S3 bucket. The bucket is set up as a static file server. In theory the UI part can be hosted on any sevrer capable of serving static or dynamic applications. It does not require IIS, Kestrel, NodeJs or any other specific server. Once loaded into the browser the app will start making `REST` calls to the the backend service which is also hosted in AWS as a serverless Lambda. In theory the backend service can be swapped with another service capable of serving content over RESTful connections. 
@@ -27,9 +27,9 @@ The application supports all types of mobile devices and works well on desktops.
 ## Lambda api
 - The api is based on the .NET Core 3.1 AWS Lambda template. The logic is implemented using C#.
 - The api is run as a serverless application.
-- The api uses the serverless database technology `DynamoDb` as it's main storage provider
-- All the default applicartion data like ratrings, commercial ids etc are retrieved from DynamoDb at startup.
-- The api uses two DynamoDb data tables for its operation. The tables' get provisioned during the initial deployment of the api (procedure is decribed below). 
+- The api uses the serverless database technology `DynamoDb` as it's main data storage provider
+- All the default application data like ratrings, commercial ids etc are retrieved from DynamoDb at startup.
+- The api uses two DynamoDb data tables for its operation. The tables are provisioned during the initial deployment of the api (procedure is decribed below). 
 
 
 ## UI app build instructions
@@ -76,7 +76,7 @@ aws cloudformation deploy --template-file ./sam-template.yml --stack-name optimi
 ```
 
 ## DynamoDb data seed instructions
-> initially the data tables are provisioned empty. In order to populate them with data the PUT api can be called, provided the api where lambda has been deployed is known. This will populate the tables with default data defined in code.
+> initially the data tables are provisioned empty. In order to populate them with data the PUT api can be used, provided the api where lambda has been deployed is known. This will populate the tables with default data defined in code.
 ```shell
 PUT https://[lambda-hostname]/Prod/v1/default
 ```
