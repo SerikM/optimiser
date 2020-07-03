@@ -40,7 +40,7 @@ npm run start
 ```
 > to build the app for deployment run 
 ```shell
-npm run start
+npm run build
 ```
 > now you can copy the files from the build folder to the server of your choice
 
